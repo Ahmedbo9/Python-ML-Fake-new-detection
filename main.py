@@ -7,128 +7,75 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
-# data pre-processing
-# loading dataset to panda dataframe
-
+# --- Data Pre-processing ---
+# Load dataset into a pandas dataframe
 news_dataset = pd.read_csv('train.csv')
-# printing the first five rows
 
-news_dataset.isnull().sum()
-news_dataset.fillna('')
-# merging author and title
-news_dataset['content'] = news_dataset['author'] + '' + news_dataset['title']
+# Handle missing values
+news_dataset.fillna('', inplace=True)
 
+# Combine author and title into one column
+news_dataset['content'] = news_dataset['author'] + ' ' + news_dataset['title']
+
+# --- Text Processing ---
+# Initialize PorterStemmer and define stopwords
 port_stem = PorterStemmer()
 stop_words = set(stopwords.words('english'))
 
 
 def stemming(content):
     """
-    Process the input text content by:
-    - Removing non-alphabetic characters
-    - Converting to lowercase
-    - Splitting into words
-    - Applying stemming
-    - Removing stopwords
-    - Rejoining into a processed string
+    Process the input text content by removing non-alphabetic characters, converting to lowercase,
+    applying stemming, removing stopwords, and rejoining into a processed string.
     """
     if not isinstance(content, str):
         return ""
 
-    # Remove non-alphabetic characters and convert to lowercase
     processed_content = re.sub('[^a-zA-Z]', ' ', content).lower()
-
-    # Split into words, apply stemming and remove stopwords
     stemmed_content = ' '.join([port_stem.stem(word) for word in processed_content.split() if word not in stop_words])
-
     return stemmed_content
 
 
-news_dataset['content'] = news_dataset['content'].astype(str)  # Ensure all entries are strings
+# Apply stemming to the content
+news_dataset['content'] = news_dataset['content'].astype(str)
 news_dataset['content'] = news_dataset['content'].apply(stemming)
 
-# separating the data and label
-X = news_dataset['content'].values
+# --- Feature Extraction ---
+# Convert textual data to vectorized form using TfidfVectorizer
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(news_dataset['content'].values)
+
+# Separate data and labels
 Y = news_dataset['label'].values
 
-"""
-   convert textual data to vectorized data
-   
-"""
-vectorizer = TfidfVectorizer()  # count the number of word in texte => give it a numerical value
-vectorizer.fit(X)  # apply to content
-X = vectorizer.transform(X)  # convert value to features
-
-"""
-Split data into training and testing sets
-"""
+# --- Model Training ---
+# Split data into training and testing sets
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, stratify=Y, random_state=2)
 
-"""
-Training logistic regression model for binary classification
-
-Y= 1 / 1+e^-z and  X = w.X+b
-"""
+# Train logistic regression model
 model = LogisticRegression()
 model.fit(X_train, Y_train)
-"""
-accuracy score on training set
-"""
-train_predictions = model.predict(X_train)
-train_accuracy = accuracy_score(train_predictions, Y_train)
 
-print('accuracy for train data: ', train_accuracy)  # 0.979 = good
+# Evaluate accuracy on training and testing sets
+train_accuracy = accuracy_score(model.predict(X_train), Y_train)
+test_accuracy = accuracy_score(model.predict(X_test), Y_test)
 
-"""
-accuracy score on testing set
-"""
-test_predictions = model.predict(X_test)
-test_accuracy = accuracy_score(test_predictions, Y_test)
-
-print('accuracy for test data: ', test_accuracy)  # 0.961 = good
-
-"""
-building a predictive system 
-
-X_new = X_test[15]
-
-prediction = model.predict(X_new)
-print(prediction)
-
-if (prediction[0]==0):
-  print('The news is Real')
-else:
-  print('The news is Fake')
-
-print(Y_test[15])
-"""
-
-"""
-testing with real data from : https://www.ctvnews.ca/health/coronavirus/what-we-know-so-far-about-the-new-covid-variant-including-symptoms-1.6697096
-"""
+print('Accuracy for train data:', train_accuracy)
+print('Accuracy for test data:', test_accuracy)
 
 
+# --- Prediction Function ---
 def preprocess_and_predict(input_text):
     """
-    Process the input text and predict using the trained model
+    Preprocess the input text and predict using the trained model.
     """
-    # Preprocess the input text
     preprocessed_text = stemming(input_text)
-
-    # Vectorize the preprocessed text
     vectorized_input = vectorizer.transform([preprocessed_text])
-
-    # Predict using the trained model
     prediction = model.predict(vectorized_input)
-
-    # Print the result
-    if prediction[0] == 0:
-        return 'The news is Real'
-    else:
-        return 'The news is Fake'
+    return 'The news is Real' if prediction[0] == 0 else 'The news is Fake'
 
 
-# Example usage
+# --- Testing the Model with Real and Fake News ---
 real_news = ('What we know so far about the new COVID variant, including symptoms NOW PLAYING CTV Medical Expert Dr. '
              'Marla Shapiro discusses new vaccine recommendations and the new COVID variant BA.2.86. 03:16 Health '
              'Canada considers new variant vaccine UP NEXT Dr. Kashif Pirzada explains how the new COVID variant '
@@ -168,7 +115,6 @@ real_news = ('What we know so far about the new COVID variant, including symptom
              'Sept. 20, 2023. (Melissa Phillip/Houston Chronicle via AP, File) FILE - A Moderna Spikevax COVID-19 '
              'vaccine is seen at a drugstore in Cypress, Texas, Sept. 20, 2023. (Melissa Phillip/Houston Chronicle '
              'via AP, File)')
-
 fake_news = ('Unsubstantiated Reports Claim New COVID-19 Variant "ZX-5" Grants Superhuman AbilitiesIn a surprising '
              'and scientifically unfounded turn of events, rumors are circulating about a new COVID-19 variant, '
              'dubbed "ZX-5", which allegedly bestows superhuman abilities upon those infected. Sources lacking '
@@ -202,5 +148,6 @@ fake_news = ('Unsubstantiated Reports Claim New COVID-19 Variant "ZX-5" Grants S
              'Utopia (a fictional society), and El Dorado (a legendary city of gold), highlighting the fantastical '
              'nature of these reports In conclusion, the ZX-5 variant remains a fabricated concept with no basis in '
              'reality, serving as a stark reminder of the power of misinformation in the digital age.')
-result = preprocess_and_predict(fake_news)
-print(result)
+
+print('Real news prediction:', preprocess_and_predict(real_news))
+print('Fake news prediction:', preprocess_and_predict(fake_news))
