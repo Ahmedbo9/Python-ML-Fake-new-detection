@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import re
 from nltk.corpus import stopwords
@@ -102,5 +101,5 @@ if (prediction[0]==0):
 else:
   print('The news is Fake')
 
-print(Y_test[3])
+print(Y_test[15])
 
