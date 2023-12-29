@@ -63,6 +63,12 @@ test_accuracy = accuracy_score(model.predict(X_test), Y_test)
 print('Accuracy for train data:', train_accuracy)
 print('Accuracy for test data:', test_accuracy)
 
+import joblib
+
+# Save the model to a file
+filename = 'model.sav'
+joblib.dump(model, filename)
+
 
 # --- Prediction Function ---
 def preprocess_and_predict(input_text):
@@ -149,5 +155,4 @@ fake_news = ('Unsubstantiated Reports Claim New COVID-19 Variant "ZX-5" Grants S
              'nature of these reports In conclusion, the ZX-5 variant remains a fabricated concept with no basis in '
              'reality, serving as a stark reminder of the power of misinformation in the digital age.')
 
-print('Real news prediction:', preprocess_and_predict(real_news))
-print('Fake news prediction:', preprocess_and_predict(fake_news))
+
