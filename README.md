@@ -4,6 +4,14 @@
 
 This project demonstrates a machine learning solution for detecting fake news, implemented using Python. It comprises a machine learning model for classification, an API developed with FastAPI, and a user-friendly web interface created using Flask.
 
+
+
+### DataSet
+
+DataSet source : https://www.kaggle.com/c/fake-news/data?select=train.csv
+
+
+
 ### Machine Learning Model
 
 The core of this project is a fake news detection model built using Python's Scikit-Learn library. The model is trained on a dataset that includes various news articles, labeled as either 'real' or 'fake'. The preprocessing of the text data involves cleaning, stemming, and vectorization (TF-IDF). A logistic regression classifier is then trained on this processed data.
