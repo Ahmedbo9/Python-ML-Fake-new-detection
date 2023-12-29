@@ -1,42 +1,54 @@
-# News Classification Project
+# Fake News Detection Project
 
-This project aims to classify news as real or fake using logistic regression. It involves pre-processing the textual data, converting it to vectorized form, and then applying a logistic regression model for classification.
+## Overview
 
-## Prerequisites
+This project demonstrates a machine learning solution for detecting fake news, implemented using Python. It comprises a machine learning model for classification, an API developed with FastAPI, and a user-friendly web interface created using Flask.
 
-- Python 3
-- Libraries: pandas, NLTK, scikit-learn
+### Machine Learning Model
 
-## Installation
+The core of this project is a fake news detection model built using Python's Scikit-Learn library. The model is trained on a dataset that includes various news articles, labeled as either 'real' or 'fake'. The preprocessing of the text data involves cleaning, stemming, and vectorization (TF-IDF). A logistic regression classifier is then trained on this processed data.
 
-1. Clone the repository or download the source code.
-2. Install required dependencies:
-3. Download NLTK stopwords (if not already downloaded):
+**Key Technologies:**
+- Pandas for data manipulation.
+- NLTK for text processing.
+- Scikit-Learn for building and evaluating the logistic regression model.
+
+### API with FastAPI
+
+A FastAPI server exposes the machine learning model as an API endpoint. This allows for easy integration with web or mobile applications. The API accepts a piece of news text as input and returns a prediction indicating whether the news is real or fake.
+
+**Key Features:**
+- Fast, asynchronous API handling.
+- Endpoint for processing and predicting news text.
+
+### Flask Web Application
+
+A Flask web application serves as the frontend for this project. Users can input news text into a form, which is then sent to the FastAPI backend for prediction. The results are displayed on the web page, providing an intuitive interface for interacting with the machine learning model.
+
+**Key Features:**
+- Integration with the FastAPI backend for real-time predictions.
+
+### Setup and Installation
+
+### Prerequisites
+
+- Python 3.8 or above
+- pip (Python package manager)
+
+### Installation Steps
+`git clone repository link`
+
+`pip install -r requirements.txt`
+
+`uvicorn main:app --reload --port 8000`
+
+`python flask_app.py`
 
 
-## Dataset
 
-DataSet source :  https://www.kaggle.com/c/fake-news/data?select=train.csv
 
-## Usage
 
-1. Load  `train.csv` file.
-2. Run the Python script to train the model and predict news authenticity.
 
-## Features
-
-- Data pre-processing includes:
-- Handling missing values.
-- Merging author and title.
-- Text cleaning and stemming.
-- Textual data is converted to numerical data using TF-IDF Vectorization.
-- The dataset is split into training and testing sets.
-- A logistic regression model is trained for binary classification.
-- The model's accuracy is evaluated on both training and testing sets.
-
-## Output
-
-The script will output the accuracy scores for both training and testing data. Additionally, it will classify a sample news item as real or fake.
 
 
 
